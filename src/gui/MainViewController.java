@@ -3,6 +3,7 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import application.Main;
 import gui.util.Alertas;
@@ -15,6 +16,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import model.services.DepartamentoServico;
 
 public class MainViewController implements Initializable {
 	
@@ -32,12 +34,15 @@ public class MainViewController implements Initializable {
 	
 	@FXML
 	public void onMenuItemDepartamentoAction () {
-		System.out.println("Dep");		
+		carregaView("/gui/DepartamentoLista.fxml", (DepartamentoListaController controller) -> {
+			controller.setDepartamentoServico(new DepartamentoServico());
+			controller.updateTableView();
+		});			
 	}
 	
 	@FXML
 	public void onMenuItemSobreAction () {
-		carregaView("/gui/Sobre.fxml");		
+		carregaView("/gui/Sobre.fxml", x -> {});		
 	}
 	
 
@@ -45,7 +50,7 @@ public class MainViewController implements Initializable {
 	public void initialize(URL uri, ResourceBundle rb) {		
 	}
 	
-	private void carregaView (String caminhoDaView) {
+	private <T> void  carregaView (String caminhoDaView, Consumer<T> initialize) {
 		try {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(caminhoDaView));
 		VBox newVBox = loader.load();
@@ -57,6 +62,9 @@ public class MainViewController implements Initializable {
 		mainVBox.getChildren().clear();
 		mainVBox.getChildren().add(mainMenu);
 		mainVBox.getChildren().addAll(newVBox.getChildren());
+		
+		T controller = loader.getController();
+		initialize.accept(controller);
 		
 		} catch (IOException e) {
 			Alertas.showAlert("IO Exception", "Erro ao carregar a View", e.getMessage(), AlertType.ERROR);
