@@ -1,7 +1,6 @@
 package models.dao.implemento;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,11 +9,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
+
 
 import db.DBConnect;
 import db.DbException;
-import model.entities.Vendedor;
 import model.entities.Departamento;
+import model.entities.Vendedor;
 import models.dao.VendedorDAO;
 
 public class VendedorDaoJDBC implements VendedorDAO {
@@ -38,7 +39,7 @@ public class VendedorDaoJDBC implements VendedorDAO {
 			
 			st.setString(1, obj.getNome());
 			st.setString(2, obj.getEmail());
-			st.setDate(3, new Date(obj.getDataNascimento().getTime()));
+			st.setDate(3, (java.sql.Date) new Date(obj.getDataNascimento().getTime()));
 			st.setDouble(4, obj.getSalario());
 			st.setInt(5, obj.getDepartamento().getId());	
 			
@@ -74,7 +75,7 @@ public class VendedorDaoJDBC implements VendedorDAO {
 			
 			st.setString(1, obj.getNome());
 			st.setString(2, obj.getEmail());
-			st.setDate(3, new Date(obj.getDataNascimento().getTime()));
+			st.setDate(3, (java.sql.Date) new Date(obj.getDataNascimento().getTime()));
 			st.setDouble(4, obj.getSalario());
 			st.setInt(5, obj.getDepartamento().getId());
 			st.setInt(6, obj.getId());
@@ -224,7 +225,7 @@ public class VendedorDaoJDBC implements VendedorDAO {
 		vend.setNome(rs.getString("Nome"));
 		vend.setEmail(rs.getString("Email"));
 		vend.setSalario(rs.getDouble("Salario"));
-		vend.setDataNascimento(rs.getDate("DataNascimento"));
+		vend.setDataNascimento(new java.util.Date(rs.getTimestamp("DataNascimento").getTime()));
 		vend.setDepartamento(dep);
 		return vend;
 	}
