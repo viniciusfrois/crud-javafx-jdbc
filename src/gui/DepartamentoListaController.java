@@ -3,9 +3,11 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import application.Main;
+import db.DbException;
 import gui.listeners.DataChangeListener;
 import gui.util.Alertas;
 import gui.util.Utils;
@@ -19,6 +21,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -44,6 +47,9 @@ public class DepartamentoListaController implements Initializable, DataChangeLis
 
 	@FXML
 	private TableColumn<Departamento, Departamento> tableColunaEdit;
+
+	@FXML
+	private TableColumn<Departamento, Departamento> tableColunaRemove;
 
 	@FXML
 	private Button btNovo;
@@ -82,6 +88,7 @@ public class DepartamentoListaController implements Initializable, DataChangeLis
 		obsList = FXCollections.observableArrayList(list);
 		tableViewDepartamento.setItems(obsList);
 		initEditButtons();
+		initRemoveButtons();
 	}
 
 	private void criarDialogForm(Departamento obj, String caminhoDaView, Stage parentStage) {
@@ -131,6 +138,37 @@ public class DepartamentoListaController implements Initializable, DataChangeLis
 						event -> criarDialogForm(obj, "/gui/DepartamentoForm.fxml", Utils.stageAtual(event)));
 			}
 		});
+	}
+
+	private void initRemoveButtons() {
+		tableColunaRemove.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		tableColunaRemove.setCellFactory(param -> new TableCell<Departamento, Departamento>() {
+			private final Button button = new Button("remover");
+
+			@Override
+			protected void updateItem(Departamento obj, boolean empty) {
+				super.updateItem(obj, empty);
+				if (obj == null) {
+					setGraphic(null);
+					return;
+				}
+				setGraphic(button);
+				button.setOnAction(event -> removeEntity(obj));
+			}
+		});
+	}
+
+	private void removeEntity(Departamento obj) {
+		Optional<ButtonType> resultado = Alertas.showConfirmation("Confirmação", "Tem certeza que quer deletar?");
+		if (resultado.get() == ButtonType.OK) {
+			try {
+			servico.remove(obj);
+			updateTableView();
+			}
+			catch (DbException e) {
+				Alertas.showAlert("Erro ao deletar", null, e.getMessage(), AlertType.ERROR);
+			}
+		}
 	}
 
 }
