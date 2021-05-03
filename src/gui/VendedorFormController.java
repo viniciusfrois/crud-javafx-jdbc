@@ -1,9 +1,11 @@
 package gui;
 
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -109,10 +111,30 @@ public class VendedorFormController implements Initializable {
 		ValidationException exception = new ValidationException("Erro de Validação");
 
 		obj.setId(gui.util.Utils.tryParseToInt(txtId.getText()));
+		
 		if (txtNome.getText() == null || txtNome.getText().trim().equals("")) {
 			exception.addErros("nome", "Campo não pode ser vazio!");
 		}
 		obj.setNome(txtNome.getText());
+
+		if (txtEmail.getText() == null || txtEmail.getText().trim().equals("")) {
+			exception.addErros("email", "Campo não pode ser vazio!");
+		}
+		obj.setEmail(txtEmail.getText());
+		
+		if (dpDataNascimento.getValue() == null) {
+			exception.addErros("dataNascimento", "Campo não pode ser vazio!");			
+		} else {
+		Instant instant = Instant.from(dpDataNascimento.getValue().atStartOfDay(ZoneId.systemDefault()));
+		obj.setDataNascimento(Date.from(instant));
+		}
+
+		if (txtSalario.getText() == null || txtSalario.getText().trim().equals("")) {
+			exception.addErros("salario", "Campo não pode ser vazio!");
+		}
+		
+		obj.setSalario(Utils.tryParseToDouble(txtSalario.getText()));
+		obj.setDepartamento(comboBoxDepartamento.getValue());
 
 		if (exception.getErros().size() > 0) {
 			throw exception;
@@ -141,7 +163,7 @@ public class VendedorFormController implements Initializable {
 		Tratamentos.setTextFieldDouble(txtSalario);
 		Tratamentos.setTextFieldMaxLength(txtEmail, 60);
 		Utils.formatDatePicker(dpDataNascimento, "dd/MM/yyyy");
-		
+
 		initializeComboBoxDepartamento();
 	}
 
@@ -152,13 +174,12 @@ public class VendedorFormController implements Initializable {
 		Locale.setDefault(Locale.US);
 		txtSalario.setText(String.format("%.2f", entidade.getSalario()));
 		if (entidade.getDataNascimento() != null) {
-			dpDataNascimento
-					.setValue(LocalDate.ofInstant(entidade.getDataNascimento().toInstant(), ZoneId.systemDefault()));
+			dpDataNascimento.setValue(LocalDate.ofInstant(entidade.getDataNascimento().toInstant(), ZoneId.systemDefault()));
 		}
 		if (entidade.getDepartamento() == null) {
 			comboBoxDepartamento.getSelectionModel().selectFirst();
 		} else {
-		comboBoxDepartamento.setValue(entidade.getDepartamento());
+			comboBoxDepartamento.setValue(entidade.getDepartamento());
 		}
 	}
 
@@ -173,6 +194,20 @@ public class VendedorFormController implements Initializable {
 
 		if (campos.contains("nome")) {
 			labelErroNome.setText(erros.get("nome"));
+		} else {
+			labelErroNome.setText("");
+		} if (campos.contains("email")) {
+			labelErroEmail.setText(erros.get("email"));
+		} else {
+			labelErroEmail.setText("");
+		} if (campos.contains("salario")) {
+			labelErroSalario.setText(erros.get("salario"));
+		} else {
+			labelErroSalario.setText("");
+		} if (campos.contains("dataNascimento")) {
+			labelErroDataNascimento.setText(erros.get("dataNascimento"));
+		} else {
+			labelErroDataNascimento.setText("");
 		}
 	}
 
