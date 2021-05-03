@@ -6,7 +6,7 @@
 <p align="center"><image src="Capturar6.PNG"></p>
 <p align="center">Aba Menu > Cadastrar > Vendedor</p>    
 <p align="center"><image src="Capturar2.PNG"></p>
-<p align="center">Aba Menu > Cadastrar > Vendedor</p>  
+<p align="center">Tela de Vendedores</p>  
 <p align="center"><image src="Capturar3.PNG"></p>
 <p align="center">Cadastrar Novo Vendedor, Requerimentos</p>
 <p align="center"><image src="Capturar4.PNG"></p>
